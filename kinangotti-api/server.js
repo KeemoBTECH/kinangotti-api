@@ -8,7 +8,7 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:3001', 'http://192.168.8.164:3000'] }));
+app.use(cors({ origin: ['https://kinangotvc-ac-ke-o13u.vercel.app/', 'http://localhost:3001', 'http://192.168.8.164:3000'] }));
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
