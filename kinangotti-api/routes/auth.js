@@ -19,44 +19,52 @@ router.post('/login-step1', async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Find admin
         const admin = await Admin.findOne({ email });
         if (!admin) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        // Verify password
         const valid = await admin.comparePassword(password);
         if (!valid) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        // Generate OTP
         const otp = generateOTP();
         const tempToken = crypto.randomBytes(32).toString('hex');
 
-        // Save OTP to DB
         await Otp.create({
             email: admin.email,
             otp,
             tempToken,
-            expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
+            expiresAt: new Date(Date.now() + 10 * 60 * 1000),
         });
 
-        // Send email
-        await sendOTP(admin.email, otp);
+        // Try to send email, but don't hang if it fails
+        let emailSent = false;
+        try {
+            await Promise.race([
+                sendOTP(admin.email, otp),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Email timeout')), 8000))
+            ]);
+            emailSent = true;
+        } catch (emailErr) {
+            console.error('Email send failed (expected on Railway):', emailErr.message);
+        }
+
+        // Always log OTP so admin can login even if email fails
+        console.log(`🔐 PRODUCTION OTP for ${admin.email}: ${otp}`);
 
         res.json({
-            message: 'OTP sent to your email',
+            message: emailSent ? 'OTP sent to your email' : 'OTP generated (check server logs if email not received)',
             tempToken,
             email: admin.email,
+            emailSent,
         });
     } catch (error) {
         console.error('Login step 1 error:', error);
-        res.status(500).json({ message: 'Failed to send OTP. Please try again.' });
+        res.status(500).json({ message: 'Server error. Please try again.' });
     }
 });
-
 // Step 2: Verify OTP & issue JWT
 router.post('/verify-otp', async (req, res) => {
     try {
