@@ -12,7 +12,7 @@ app.use(cors({
     origin: [
         'http://localhost:3000',
         'http://localhost:3001',
-        'https://kinangotvc-ac-ke-o13u.vercel.app/', 
+        'https://kinangotvc-ac-ke-o13u.vercel.app', 
         'https://admin-panel-3so6.vercel.app'
     ] }));
 app.use(express.json());
