@@ -8,13 +8,19 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors({ 
+app.use(cors({
     origin: [
         'http://localhost:3000',
         'http://localhost:3001',
-        'https://kinangotvc-ac-ke-o13u.vercel.app', 
-        'https://admin-panel-3so6.vercel.app'
-    ] }));
+        'http://localhost:5173',
+        'http://localhost:5174',
+        'https://kinangotvc-ac-ke-o13u.vercel.app',
+        'https://admin-panel-3so6.vercel.app',
+        'https://admin-panel-3so6-dnhsen0bf-keemo-btech.vercel.app'
+    ],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
