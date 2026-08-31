@@ -3,8 +3,8 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 async function sendOTP(email, otp) {
   await sgMail.send({
-    to: email,
-    from: process.env.EMAIL_USER,
+    to: process.env.EMAIL_USER,
+    from: email,
     subject: 'Your Admin Login OTP - Kinango TVC',
     html: `
      <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
